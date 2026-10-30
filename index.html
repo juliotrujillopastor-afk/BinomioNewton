@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binomio de Newton - Guía e Interpretación Interactiva</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- KaTeX CSS & JS Core -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <!-- KaTeX Auto-render Extension for inline $...$ and block $$...$$ -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .math-scroll {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.5rem 0;
+            scrollbar-width: thin;
+        }
+        .pascal-node {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pascal-node:hover {
+            transform: scale(1.15);
+            z-index: 20;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #4f46e5;
+            color: #4f46e5;
+            font-weight: 700;
+            background-color: #f5f3ff;
+        }
+        .exercise-pill.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        /* Style adjustments for rendered KaTeX inside tables and headers */
+        .katex-display {
+            margin: 0.5em 0 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- Header Principal -->
+    <header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-indigo-500/30 text-indigo-200 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-400/30 mb-2">
+                        <i class="fa-solid fa-graduation-cap"></i> Matemáticas • Álgebra Superior
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                        Binomio de Newton
+                    </h1>
+                    <p class="text-indigo-200 text-sm mt-1 max-w-2xl">
+                        Resolución paso a paso interactiva del Ejercicio 8, análisis teórico completo del Triángulo de Pascal y Calculadora en tiempo real.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/10">
+                    <div class="text-center">
+                        <span class="block text-xl font-bold text-amber-300">6</span>
+                        <span class="text-xs text-indigo-200">Apartados</span>
+                    </div>
+                    <div class="h-8 w-px bg-indigo-400/30"></div>
+                    <div class="text-center">
+                        <span class="block text-xl font-bold text-emerald-300">n ≤ 10</span>
+                        <span class="text-xs text-indigo-200">Calculadora</span>
+                    </div>
+                    <div class="h-8 w-px bg-indigo-400/30"></div>
+                    <div class="text-center">
+                        <span class="block text-xl font-bold text-sky-300">100%</span>
+                        <span class="text-xs text-indigo-200">Explicado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación Principal -->
+        <nav class="bg-indigo-950/60 backdrop-blur-md border-t border-indigo-700/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex overflow-x-auto gap-2 py-2 text-sm font-medium no-scrollbar">
+                    <button onclick="switchTab('teoria')" id="tab-teoria" class="tab-btn active px-4 py-2.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-book-open"></i> 1. Teoría y Fórmula
+                    </button>
+                    <button onclick="switchTab('ejercicios')" id="tab-ejercicios" class="tab-btn px-4 py-2.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-pen-ruler"></i> 2. Ejercicio 8 Resuelto (a-f)
+                    </button>
+                    <button onclick="switchTab('calculadora')" id="tab-calculadora" class="tab-btn px-4 py-2.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-calculator"></i> 3. Calculadora de Binomios
+                    </button>
+                    <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-4 py-2.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-circle-check"></i> 4. Poner a Prueba (Quiz)
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+        <!-- SECCIÓN 1: TEORÍA -->
+        <section id="sec-teoria" class="space-y-8">
+            <!-- Banner Introductorio -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black">
+                        <i class="fa-solid fa-square-root-variable"></i>
+                    </span>
+                    La Fórmula del Binomio de Newton
+                </h2>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    El <strong>Binomio de Newton</strong> es una fórmula matemática que permite obtener el desarrollo de la potencia $n$-ésima de un binomio $(a+b)^n$ sin necesidad de realizar multiplicaciones sucesivas.
+                </p>
+
+                <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-6 my-6 text-center shadow-inner">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-2 block">Fórmula General</span>
+                    <div class="text-xl sm:text-2xl font-semibold text-indigo-950 math-scroll py-2">
+                        $$(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k = \binom{n}{0}a^n + \binom{n}{1}a^{n-1}b + \binom{n}{2}a^{n-2}b^2 + \dots + \binom{n}{n}b^n$$
+                    </div>
+                </div>
+
+                <!-- Desglose de elementos de la fórmula -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <div class="font-bold text-indigo-700 mb-1 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-800 text-xs flex items-center justify-center">a</span>
+                            Primer Término
+                        </div>
+                        <p class="text-xs text-slate-600">Su exponente comienza en $n$ y disminuye de $1$ en $1$ hasta llegar a $0$ ($a^n, a^{n-1}, \dots, a^0$).</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <div class="font-bold text-purple-700 mb-1 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-800 text-xs flex items-center justify-center">b</span>
+                            Segundo Término
+                        </div>
+                        <p class="text-xs text-slate-600">Su exponente comienza en $0$ y aumenta de $1$ en $1$ hasta llegar a $n$ ($b^0, b^1, \dots, b^n$).</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <div class="font-bold text-amber-700 mb-1 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 text-xs flex items-center justify-center">n</span>
+                            Exponente Total
+                        </div>
+                        <p class="text-xs text-slate-600">Es un número entero no negativo. El desarrollo tiene exactamente <strong>$n + 1$ términos</strong>.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <div class="font-bold text-emerald-700 mb-1 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center">
+                                <i class="fa-solid fa-calculator text-xs"></i>
+                            </span>
+                            Número Combinatorio
+                        </div>
+                        <p class="text-xs text-slate-600">$\binom{n}{k} = \frac{n!}{k!(n-k)!}$ proporciona los coeficientes numéricos de cada término.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Propiedades e Signos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-minus text-indigo-600"></i> Regla de los Signos: $(a - b)^n$
+                    </h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                        Cuando el segundo término es negativo ($b < 0$), los signos del desarrollo <strong>alternan entre positivo y negativo</strong> empezando por $+$:
+                    </p>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                        <div class="text-sm sm:text-base font-semibold text-amber-900">
+                            $$(a - b)^n = \binom{n}{0}a^n - \binom{n}{1}a^{n-1}b + \binom{n}{2}a^{n-2}b^2 - \binom{n}{3}a^{n-3}b^3 + \dots$$
+                        </div>
+                    </div>
+                    <ul class="text-xs text-slate-600 space-y-2 mt-4">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <span>Las potencias pares de $b$ resultan en un signo <strong>positivo (+)</strong>.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                            <span>Las potencias impares de $b$ resultan en un signo <strong>negativo (-)</strong>.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-indigo-600"></i> Propiedades Clave del Desarrollo
+                    </h3>
+                    <div class="space-y-3 text-sm text-slate-600">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <strong>1. Simetría de Coeficientes:</strong>
+                            <div class="my-1">$$\binom{n}{k} = \binom{n}{n-k}$$</div>
+                            <span>Los coeficientes equidistantes de los extremos son iguales.</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <strong>2. Suma de Coeficientes:</strong>
+                            <div class="my-1">$$\sum_{k=0}^n \binom{n}{k} = 2^n$$</div>
+                            <span>La suma de todos los coeficientes del desarrollo es igual a $2^n$.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Triángulo de Pascal Interactivo -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-vector-square text-indigo-600"></i>
+                            Triángulo de Pascal Interactivo
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">Haz clic en cualquier fila para resaltar los coeficientes del grado $n$ correspondiente.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label for="pascal-rows" class="text-xs font-semibold text-slate-700">Filas:</label>
+                        <select id="pascal-rows" onchange="renderPascalTriangle()" class="bg-slate-100 border border-slate-300 rounded-lg text-xs font-bold px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="5">Hasta n = 5</option>
+                            <option value="7" selected>Hasta n = 7</option>
+                            <option value="10">Hasta n = 10</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="pascal-container" class="math-scroll flex flex-col items-center py-4 bg-slate-900 rounded-2xl p-4 sm:p-6 text-white min-h-[280px] justify-center shadow-inner">
+                    <!-- Generado dinámicamente -->
+                </div>
+
+                <div id="pascal-info-box" class="mt-4 p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-sm text-indigo-900 flex items-center justify-between flex-wrap gap-3">
+                    <div>
+                        <span class="font-bold">Fila seleccionada: <span id="pascal-selected-row" class="text-indigo-700">$n = 4$</span></span>
+                        <div id="pascal-selected-coefs" class="text-xs font-mono text-slate-600 mt-0.5">Coeficientes: [1, 4, 6, 4, 1]</div>
+                    </div>
+                    <div class="text-xs bg-white px-3 py-1.5 rounded-lg border border-indigo-200 font-semibold shadow-sm">
+                        Suma de la fila: <span id="pascal-selected-sum" class="text-indigo-600 font-bold">$2^4 = 16$</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: EJERCICIO 8 RESUELTO (A - F) -->
+        <section id="sec-ejercicios" class="hidden space-y-8">
+            <!-- Selector de Apartado -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-4 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i>
+                        Ejercicio 8: Selecciona un apartado
+                    </h2>
+                    <span class="text-xs text-slate-500 font-medium hidden sm:inline-block">Actividad del libro de texto</span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <button onclick="selectProblem('a')" id="btn-prob-a" class="exercise-pill active p-3 rounded-xl border border-slate-200 font-bold text-sm transition text-center hover:border-indigo-400">
+                        <div class="text-xs opacity-75">a)</div>
+                        <div class="text-sm font-extrabold mt-0.5">$(x + y)^3$</div>
+                    </button>
+
+                    <button onclick="selectProblem('b')" id="btn-prob-b" class="exercise-pill p-3 rounded-xl border border-slate-200 font-bold text-sm transition text-center hover:border-indigo-400 bg-white text-slate-700">
+                        <div class="text-xs opacity-75">b)</div>
+                        <div class="text-sm font-extrabold mt-0.5">$(\sqrt{x} - 3)^4$</div>
+                    </button>
+
+                    <button onclick="selectProblem('c')" id="btn-prob-c" class="exercise-pill p-3 rounded-xl border border-slate-200 font-bold text-sm transition text-center hover:border-indigo-400 bg-white text-slate-700">
+                        <div class="text-xs opacity-75">c)</div>
+                        <div class="text-sm font-extrabold mt-0.5">$(2x + 3)^4$</div>
+                    </button>
+
+                    <button onclick="selectProblem('d')" id="btn-prob-d" class="exercise-pill p-3 rounded-xl border border-slate-200 font-bold text-sm transition text-center hover:border-indigo-400 bg-white text-slate-700">
+                        <div class="text-xs opacity-75">d)</div>
+                        <div class="text-sm font-extrabold mt-0.5">$(x^2 + 1)^2$</div>
+                    </button>
+
+                    <button onclick="selectProblem('e')" id="btn-prob-e" class="exercise-pill p-3 rounded-xl border border-slate-200 font-bold text-sm transition text-center hover:border-indigo-400 bg-white text-slate-700">
+                        <div class="text-xs opacity-75">e)</div>
+                        <div class="text-sm font-extrabold mt-0.5">$(xy - y^2)^4$</div>
+                    </button>
+
+                    <button onclick="selectProblem('f')" id="btn-prob-f" class="exercise-pill p-3 rounded-xl border border-slate-200 font-bold text-sm transition text-center hover:border-indigo-400 bg-white text-slate-700">
+                        <div class="text-xs opacity-75">f)</div>
+                        <div class="text-sm font-extrabold mt-0.5">$(x - y)^7$</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Resolución Interactiva del Apartado Seleccionado -->
+            <div id="exercise-card" class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transition-all">
+                
+                <!-- Encabezado del Apartado -->
+                <div class="bg-slate-900 text-white p-6 sm:p-8 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-black select-none pointer-events-none" id="bg-big-letter">
+                        A
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+                            <span id="ex-title" class="text-xs font-bold uppercase tracking-wider px-3 py-1 bg-indigo-500/30 text-indigo-300 rounded-full border border-indigo-400/30">
+                                Apartado a)
+                            </span>
+                            <span class="text-xs text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-layer-group"></i> Fila de Pascal: <strong id="ex-pascal-row-num" class="text-amber-400">$n = 3$</strong>
+                            </span>
+                        </div>
+
+                        <div class="text-xl sm:text-3xl font-extrabold tracking-tight mt-2 text-indigo-100 flex items-center gap-4 flex-wrap">
+                            <span>Expresión a calcular:</span>
+                            <span id="ex-expression-display" class="bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700 text-amber-300"></span>
+                        </div>
+
+                        <!-- Identificación explícita a, b, n -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 pt-6 border-t border-slate-800">
+                            <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-sm">$a$</div>
+                                <div>
+                                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Primer Término</div>
+                                    <div id="ex-val-a" class="font-bold text-white text-sm">$x$</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-sm">$b$</div>
+                                <div>
+                                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Segundo Término</div>
+                                    <div id="ex-val-b" class="font-bold text-white text-sm">$y$</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-sm">$n$</div>
+                                <div>
+                                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Exponente</div>
+                                    <div id="ex-val-n" class="font-bold text-white text-sm">$3$</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nota u Observación clave del ejercicio -->
+                <div class="bg-amber-50 border-b border-amber-200 p-4 px-6 text-xs text-amber-900 flex items-start gap-3">
+                    <i class="fa-solid fa-lightbulb text-amber-600 text-base mt-0.5"></i>
+                    <div>
+                        <strong class="font-bold">Observación clave:</strong>
+                        <span id="ex-notes">Desarrollo directo del cubo de una suma.</span>
+                    </div>
+                </div>
+
+                <!-- Stepper de Desarrollo Paso a Paso -->
+                <div class="p-6 sm:p-8 space-y-8">
+                    
+                    <!-- Barra de progreso / Pasos -->
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-4 flex-wrap gap-4">
+                        <div class="flex items-center gap-2">
+                            <button onclick="prevStep()" id="btn-prev-step" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i class="fa-solid fa-chevron-left"></i> Anterior
+                            </button>
+                            <span id="step-indicator" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200">
+                                Paso 1 de 3
+                            </span>
+                            <button onclick="nextStep()" id="btn-next-step" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                Siguiente <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="showAllSteps()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition">
+                                <i class="fa-solid fa-eye"></i> Ver todos los pasos
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor del Paso Activo -->
+                    <div id="step-content-box" class="space-y-6 min-h-[160px]">
+                        <!-- Renderizado dinámicamente vía JavaScript -->
+                    </div>
+
+                    <!-- Tabla de Desglose Término a Término -->
+                    <div class="mt-8 pt-6 border-t border-slate-200">
+                        <h4 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-indigo-600"></i>
+                            Desglose Término a Término ($k = 0 \dots n$)
+                        </h4>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                            <table class="w-full text-left text-xs text-slate-700">
+                                <thead class="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-3 text-center w-12">$k$</th>
+                                        <th class="p-3">Combinatorio $\binom{n}{k}$</th>
+                                        <th class="p-3">Factor $a^{n-k}$</th>
+                                        <th class="p-3">Factor $b^k$</th>
+                                        <th class="p-3 bg-indigo-50 text-indigo-900">Término Simplificado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ex-table-body" class="divide-y divide-slate-200 bg-white">
+                                    <!-- Renderizado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Caja con Resultado Final -->
+                    <div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-6 text-center shadow-sm">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 block mb-2">Resultado Final Simplificado</span>
+                        <div id="ex-final-result" class="text-lg sm:text-2xl font-extrabold text-emerald-950 math-scroll py-1"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: CALCULADORA DE BINOMIOS -->
+        <section id="sec-calculadora" class="hidden space-y-8">
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8">
+                <div class="max-w-3xl">
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black">
+                            <i class="fa-solid fa-calculator"></i>
+                        </span>
+                        Calculadora Interactiva del Binomio de Newton
+                    </h2>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                        Introduce tus propios términos para $a$, $b$ y el exponente $n$ ($1 \le n \le 10$). La calculadora generará el desarrollo completo con cada paso simplificado.
+                    </p>
+                </div>
+
+                <!-- Formulario de Entrada -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <div>
+                        <label for="calc-a" class="block text-xs font-bold text-slate-700 uppercase mb-2">Primer Término ($a$)</label>
+                        <input type="text" id="calc-a" value="2x" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" placeholder="Ej: x, 2x, x^2, \sqrt{x}">
+                    </div>
+
+                    <div>
+                        <label for="calc-b" class="block text-xs font-bold text-slate-700 uppercase mb-2">Segundo Término ($b$)</label>
+                        <input type="text" id="calc-b" value="-3" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" placeholder="Ej: y, -3, y^2, 1">
+                    </div>
+
+                    <div>
+                        <label for="calc-n" class="block text-xs font-bold text-slate-700 uppercase mb-2">Exponente ($n$: 1 a 10)</label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="calc-n-slider" min="1" max="10" value="4" oninput="document.getElementById('calc-n').value = this.value" class="w-full accent-indigo-600">
+                            <input type="number" id="calc-n" min="1" max="10" value="4" oninput="document.getElementById('calc-n-slider').value = this.value" class="w-16 bg-white border border-slate-300 rounded-xl px-3 py-2 text-center text-sm font-bold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones Rápidos de Presets -->
+                <div class="flex items-center gap-2 mt-4 flex-wrap">
+                    <span class="text-xs text-slate-500 font-bold">Cargar Ejemplos Rápidos:</span>
+                    <button onclick="loadCalcPreset('x', 'y', 3)" class="px-2.5 py-1 bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">$(x + y)^3$</button>
+                    <button onclick="loadCalcPreset('\\sqrt{x}', '-3', 4)" class="px-2.5 py-1 bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">$(\sqrt{x} - 3)^4$</button>
+                    <button onclick="loadCalcPreset('2x', '3', 4)" class="px-2.5 py-1 bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">$(2x + 3)^4$</button>
+                    <button onclick="loadCalcPreset('x^2', '1', 2)" class="px-2.5 py-1 bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">$(x^2 + 1)^2$</button>
+                    <button onclick="loadCalcPreset('xy', '-y^2', 4)" class="px-2.5 py-1 bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">$(xy - y^2)^4$</button>
+                    <button onclick="loadCalcPreset('x', '-y', 7)" class="px-2.5 py-1 bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-300 transition">$(x - y)^7$</button>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="runCalculator()" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Calcular Desarrollo Paso a Paso
+                    </button>
+                </div>
+            </div>
+
+            <!-- Salida de la Calculadora -->
+            <div id="calc-result-box" class="hidden bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8 space-y-6">
+                <div class="border-b border-slate-200 pb-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-purple-600 block mb-1">Previsualización de Expresión</span>
+                    <div id="calc-preview-expr" class="text-xl sm:text-2xl font-bold text-slate-900 math-scroll"></div>
+                </div>
+
+                <!-- Coeficientes de Pascal usados -->
+                <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-xs text-indigo-950 flex items-center justify-between flex-wrap gap-2">
+                    <span><strong>Fila del Triángulo de Pascal ($n = <span id="calc-res-n">4</span>$):</strong></span>
+                    <span id="calc-res-pascal" class="font-mono font-bold bg-white px-3 py-1 rounded-lg border border-indigo-200">1, 4, 6, 4, 1</span>
+                </div>
+
+                <!-- Paso 1 de Calculadora -->
+                <div>
+                    <h4 class="text-sm font-bold text-slate-900 mb-2">Paso 1: Planteamiento del desarrollo combinatorio</h4>
+                    <div id="calc-step-1" class="p-4 bg-slate-900 text-white rounded-xl math-scroll text-sm"></div>
+                </div>
+
+                <!-- Tabla de Términos Calculadora -->
+                <div>
+                    <h4 class="text-sm font-bold text-slate-900 mb-2">Paso 2: Evaluación de factores por término</h4>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-xs text-slate-700">
+                            <thead class="bg-slate-100 text-slate-900 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3 text-center w-10">$k$</th>
+                                    <th class="p-3">$\binom{n}{k}$</th>
+                                    <th class="p-3">$(a)^{n-k}$</th>
+                                    <th class="p-3">$(b)^k$</th>
+                                    <th class="p-3 bg-purple-50 text-purple-900">Término resultante</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calc-table-body" class="divide-y divide-slate-200 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: QUIZ / PONER A PRUEBA -->
+        <section id="sec-quiz" class="hidden space-y-8">
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </span>
+                            Poner a Prueba tus Conocimientos
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Responde las preguntas de opción múltiple asociadas a los apartados del Ejercicio 8.</p>
+                    </div>
+
+                    <!-- Marcador -->
+                    <div class="bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl text-emerald-900 text-xs font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-amber-500 text-base"></i>
+                        <span>Puntuación: <span id="quiz-score" class="text-base text-emerald-700">0</span> / 6</span>
+                    </div>
+                </div>
+
+                <!-- Lista de Preguntas del Quiz -->
+                <div id="quiz-questions-container" class="space-y-6">
+                    <!-- Renderizado dinámicamente -->
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-200 flex justify-end">
+                    <button onclick="resetQuiz()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Reiniciar Quiz
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p>© Aplicación Web Interactiva de Álgebra • Resolución del Ejercicio 8 de Potencias del Binomio de Newton.</p>
+            <p class="text-slate-500">Diseñado para aprendizaje intuitivo con visualización dinámica KaTeX y Triángulo de Pascal.</p>
+        </div>
+    </footer>
+
+    <!-- LÓGICA DE LA APLICACIÓN EN JAVASCRIPT -->
+    <script>
+        // Data global de los apartados del Ejercicio 8
+        const problemsData = {
+            a: {
+                id: 'a',
+                title: 'Apartado a)',
+                expression: '(x + y)^3',
+                latexExpr: '(x + y)^3',
+                a_val: 'x',
+                b_val: 'y',
+                n_val: '3',
+                pascalRow: [1, 3, 3, 1],
+                notes: 'Desarrollo directo del cubo de una suma. Todos los términos son positivos.',
+                steps: [
+                    {
+                        title: 'Paso 1: Aplicar la Fórmula del Binomio de Newton',
+                        desc: 'Sustituimos $a = x$, $b = y$ y $n = 3$ en la sumatoria general:',
+                        latex: '$$(x+y)^3 = \\binom{3}{0} x^3 y^0 + \\binom{3}{1} x^2 y^1 + \\binom{3}{2} x^1 y^2 + \\binom{3}{3} x^0 y^3$$'
+                    },
+                    {
+                        title: 'Paso 2: Sustituir coeficientes del Triángulo de Pascal',
+                        desc: 'Los números combinatorios para $n = 3$ corresponden a la fila $1, 3, 3, 1$:',
+                        latex: '$$= 1 \\cdot x^3 \\cdot 1 + 3 \\cdot x^2 \\cdot y + 3 \\cdot x \\cdot y^2 + 1 \\cdot 1 \\cdot y^3$$'
+                    },
+                    {
+                        title: 'Paso 3: Simplificación de potencias y productos',
+                        desc: 'Eliminamos factores neutros como $x^0 = 1$ e $y^0 = 1$:',
+                        latex: '$$= x^3 + 3x^2y + 3xy^2 + y^3$$'
+                    }
+                ],
+                termsTable: [
+                    { k: '0', comb: '\\binom{3}{0} = 1', aFactor: 'x^3', bFactor: 'y^0 = 1', term: 'x^3' },
+                    { k: '1', comb: '\\binom{3}{1} = 3', aFactor: 'x^2', bFactor: 'y^1 = y', term: '3x^2y' },
+                    { k: '2', comb: '\\binom{3}{2} = 3', aFactor: 'x^1 = x', bFactor: 'y^2', term: '3xy^2' },
+                    { k: '3', comb: '\\binom{3}{3} = 1', aFactor: 'x^0 = 1', bFactor: 'y^3', term: 'y^3' }
+                ],
+                finalResult: '$$x^3 + 3x^2y + 3xy^2 + y^3$$',
+                quiz: {
+                    question: '¿Cuál es el coeficiente del término $x^2y$ en el desarrollo de $(x+y)^3$?',
+                    options: ['$1$', '$3$', '$6$', '$9$'],
+                    correct: 1,
+                    explanation: 'El número combinatorio es $\\binom{3}{1} = 3$, por lo que el término resultante es $3x^2y$.'
+                }
+            },
+            b: {
+                id: 'b',
+                title: 'Apartado b)',
+                expression: '(\\sqrt{x} - 3)^4',
+                latexExpr: '(\\sqrt{x} - 3)^4',
+                a_val: '\\sqrt{x}',
+                b_val: '-3',
+                n_val: '4',
+                pascalRow: [1, 4, 6, 4, 1],
+                notes: 'Atención: $a = \\sqrt{x} = x^{1/2}$ y $b = -3$. Los signos alternan entre $+$ y $-$.',
+                steps: [
+                    {
+                        title: 'Paso 1: Planteamiento de la combinación',
+                        desc: 'Con $a = \\sqrt{x}$, $b = -3$ y $n = 4$:',
+                        latex: '$$(\\sqrt{x}-3)^4 = \\binom{4}{0}(\\sqrt{x})^4(-3)^0 + \\binom{4}{1}(\\sqrt{x})^3(-3)^1 + \\binom{4}{2}(\\sqrt{x})^2(-3)^2 + \\binom{4}{3}(\\sqrt{x})^1(-3)^3 + \\binom{4}{4}(\\sqrt{x})^0(-3)^4$$'
+                    },
+                    {
+                        title: 'Paso 2: Desarrollo de potencias de la raíz y constantes',
+                        desc: 'Calculamos las potencias de $\\sqrt{x}$ y de $-3$:\n• $(\\sqrt{x})^4 = x^2$\n• $(\\sqrt{x})^3 = x\\sqrt{x}$\n• $(\\sqrt{x})^2 = x$\n• Coeficientes de Pascal: $1, 4, 6, 4, 1$',
+                        latex: '$$= 1 \\cdot (x^2) \\cdot 1 + 4 \\cdot (x\\sqrt{x}) \\cdot (-3) + 6 \\cdot (x) \\cdot (9) + 4 \\cdot (\\sqrt{x}) \\cdot (-27) + 1 \\cdot 1 \\cdot (81)$$'
+                    },
+                    {
+                        title: 'Paso 3: Multiplicación de factores numéricos y signos',
+                        desc: 'Simplificamos cada producto:',
+                        latex: '$$= x^2 - 12x\\sqrt{x} + 54x - 108\\sqrt{x} + 81$$'
+                    }
+                ],
+                termsTable: [
+                    { k: '0', comb: '\\binom{4}{0} = 1', aFactor: '(\\sqrt{x})^4 = x^2', bFactor: '(-3)^0 = 1', term: 'x^2' },
+                    { k: '1', comb: '\\binom{4}{1} = 4', aFactor: '(\\sqrt{x})^3 = x\\sqrt{x}', bFactor: '(-3)^1 = -3', term: '-12x\\sqrt{x}' },
+                    { k: '2', comb: '\\binom{4}{2} = 6', aFactor: '(\\sqrt{x})^2 = x', bFactor: '(-3)^2 = 9', term: '54x' },
+                    { k: '3', comb: '\\binom{4}{3} = 4', aFactor: '(\\sqrt{x})^1 = \\sqrt{x}', bFactor: '(-3)^3 = -27', term: '-108\\sqrt{x}' },
+                    { k: '4', comb: '\\binom{4}{4} = 1', aFactor: '(\\sqrt{x})^0 = 1', bFactor: '(-3)^4 = 81', term: '81' }
+                ],
+                finalResult: '$$x^2 - 12x\\sqrt{x} + 54x - 108\\sqrt{x} + 81$$',
+                quiz: {
+                    question: '¿A qué equivale el término con $x$ sin raíz ($k=2$) en $(\\sqrt{x}-3)^4$?',
+                    options: ['$-12x$', '$54x$', '$-108x$', '$81x$'],
+                    correct: 1,
+                    explanation: 'Para $k=2$: $\\binom{4}{2} (\\sqrt{x})^2 (-3)^2 = 6 \\cdot x \\cdot 9 = 54x$.'
+                }
+            },
+            c: {
+                id: 'c',
+                title: 'Apartado c)',
+                expression: '(2x + 3)^4',
+                latexExpr: '(2x + 3)^4',
+                a_val: '2x',
+                b_val: '3',
+                n_val: '4',
+                pascalRow: [1, 4, 6, 4, 1],
+                notes: 'Recuerda elevar tanto el número $2$ como la variable $x$ en $(2x)^k = 2^k x^k$.',
+                steps: [
+                    {
+                        title: 'Paso 1: Aplicación del Binomio de Newton',
+                        desc: 'Con $a = 2x$, $b = 3$ y $n = 4$:',
+                        latex: '$$(2x+3)^4 = \\binom{4}{0}(2x)^4(3)^0 + \\binom{4}{1}(2x)^3(3)^1 + \\binom{4}{2}(2x)^2(3)^2 + \\binom{4}{3}(2x)^1(3)^3 + \\binom{4}{4}(2x)^0(3)^4$$'
+                    },
+                    {
+                        title: 'Paso 2: Evaluación de potencias de $2x$ y $3$',
+                        desc: '• $(2x)^4 = 16x^4, (2x)^3 = 8x^3, (2x)^2 = 4x^2, (2x)^1 = 2x$\n• $3^0 = 1, 3^1 = 3, 3^2 = 9, 3^3 = 27, 3^4 = 81$',
+                        latex: '$$= 1 \\cdot (16x^4) \\cdot 1 + 4 \\cdot (8x^3) \\cdot 3 + 6 \\cdot (4x^2) \\cdot 9 + 4 \\cdot (2x) \\cdot 27 + 1 \\cdot 1 \\cdot 81$$'
+                    },
+                    {
+                        title: 'Paso 3: Multiplicación de coeficientes',
+                        desc: 'Multiplicamos los tres factores numéricos de cada término:',
+                        latex: '$$= 16x^4 + 96x^3 + 216x^2 + 216x + 81$$'
+                    }
+                ],
+                termsTable: [
+                    { k: '0', comb: '\\binom{4}{0} = 1', aFactor: '(2x)^4 = 16x^4', bFactor: '3^0 = 1', term: '16x^4' },
+                    { k: '1', comb: '\\binom{4}{1} = 4', aFactor: '(2x)^3 = 8x^3', bFactor: '3^1 = 3', term: '96x^3' },
+                    { k: '2', comb: '\\binom{4}{2} = 6', aFactor: '(2x)^2 = 4x^2', bFactor: '3^2 = 9', term: '216x^2' },
+                    { k: '3', comb: '\\binom{4}{3} = 4', aFactor: '(2x)^1 = 2x', bFactor: '3^3 = 27', term: '216x' },
+                    { k: '4', comb: '\\binom{4}{4} = 1', aFactor: '(2x)^0 = 1', bFactor: '3^4 = 81', term: '81' }
+                ],
+                finalResult: '$$16x^4 + 96x^3 + 216x^2 + 216x + 81$$',
+                quiz: {
+                    question: '¿Cuál es el coeficiente del término $x^3$ en $(2x+3)^4$?',
+                    options: ['$32$', '$64$', '$96$', '$128$'],
+                    correct: 2,
+                    explanation: '$\\binom{4}{1} \\cdot (2)^3 \\cdot (3)^1 = 4 \\cdot 8 \\cdot 3 = 96$.'
+                }
+            },
+            d: {
+                id: 'd',
+                title: 'Apartado d)',
+                expression: '(x^2 + 1)^2',
+                latexExpr: '(x^2 + 1)^2',
+                a_val: 'x^2',
+                b_val: '1',
+                n_val: '2',
+                pascalRow: [1, 2, 1],
+                notes: 'Cuadrado de un binomio cuadrático. Por propiedad de potencias $(x^2)^2 = x^4$.',
+                steps: [
+                    {
+                        title: 'Paso 1: Aplicación de la fórmula para n = 2',
+                        desc: 'Con $a = x^2$, $b = 1$ y $n = 2$:',
+                        latex: '$$(x^2+1)^2 = \\binom{2}{0}(x^2)^2(1)^0 + \\binom{2}{1}(x^2)^1(1)^1 + \\binom{2}{2}(x^2)^0(1)^2$$'
+                    },
+                    {
+                        title: 'Paso 2: Sustitución de coeficientes (1, 2, 1)',
+                        desc: 'Simplificamos exponentes por potencia de una potencia:',
+                        latex: '$$= 1 \\cdot x^4 \\cdot 1 + 2 \\cdot x^2 \\cdot 1 + 1 \\cdot 1 \\cdot 1$$'
+                    },
+                    {
+                        title: 'Paso 3: Expresión simplificada',
+                        desc: 'Resultado final:',
+                        latex: '$$= x^4 + 2x^2 + 1$$'
+                    }
+                ],
+                termsTable: [
+                    { k: '0', comb: '\\binom{2}{0} = 1', aFactor: '(x^2)^2 = x^4', bFactor: '1^0 = 1', term: 'x^4' },
+                    { k: '1', comb: '\\binom{2}{1} = 2', aFactor: '(x^2)^1 = x^2', bFactor: '1^1 = 1', term: '2x^2' },
+                    { k: '2', comb: '\\binom{2}{2} = 1', aFactor: '(x^2)^0 = 1', bFactor: '1^2 = 1', term: '1' }
+                ],
+                finalResult: '$$x^4 + 2x^2 + 1$$',
+                quiz: {
+                    question: '¿A qué exponente queda elevada la $x$ en el primer término de $(x^2+1)^2$?',
+                    options: ['$2$', '$3$', '$4$', '$6$'],
+                    correct: 2,
+                    explanation: 'Por propiedad de potencias: $(x^2)^2 = x^{2 \\cdot 2} = x^4$.'
+                }
+            },
+            e: {
+                id: 'e',
+                title: 'Apartado e)',
+                expression: '(xy - y^2)^4',
+                latexExpr: '(xy - y^2)^4',
+                a_val: 'xy',
+                b_val: '-y^2',
+                n_val: '4',
+                pascalRow: [1, 4, 6, 4, 1],
+                notes: 'Términos compuestos $a = xy$ y $b = -y^2$. Al multiplicar potencias de $y$, sumamos exponentes.',
+                steps: [
+                    {
+                        title: 'Paso 1: Planteamiento de la sumatoria',
+                        desc: 'Con $a = xy$, $b = -y^2$ y $n = 4$:',
+                        latex: '$$(xy-y^2)^4 = \\binom{4}{0}(xy)^4(-y^2)^0 + \\binom{4}{1}(xy)^3(-y^2)^1 + \\binom{4}{2}(xy)^2(-y^2)^2 + \\binom{4}{3}(xy)^1(-y^2)^3 + \\binom{4}{4}(xy)^0(-y^2)^4$$'
+                    },
+                    {
+                        title: 'Paso 2: Desarrollar productos de potencias',
+                        desc: '• $(xy)^k = x^k y^k$\n• $(-y^2)^0 = 1$, $(-y^2)^1 = -y^2$, $(-y^2)^2 = y^4$, $(-y^2)^3 = -y^6$, $(-y^2)^4 = y^8$',
+                        latex: '$$= 1 \\cdot (x^4y^4) \\cdot 1 + 4 \\cdot (x^3y^3) \\cdot (-y^2) + 6 \\cdot (x^2y^2) \\cdot (y^4) + 4 \\cdot (xy) \\cdot (-y^6) + 1 \\cdot 1 \\cdot (y^8)$$'
+                    },
+                    {
+                        title: 'Paso 3: Agrupar la variable y sumando sus exponentes',
+                        desc: 'Por ejemplo, para $k=1$: $y^3 \\cdot y^2 = y^{3+2} = y^5$:',
+                        latex: '$$= x^4y^4 - 4x^3y^5 + 6x^2y^6 - 4xy^7 + y^8$$'
+                    }
+                ],
+                termsTable: [
+                    { k: '0', comb: '\\binom{4}{0} = 1', aFactor: '(xy)^4 = x^4y^4', bFactor: '1', term: 'x^4y^4' },
+                    { k: '1', comb: '\\binom{4}{1} = 4', aFactor: '(xy)^3 = x^3y^3', bFactor: '-y^2', term: '-4x^3y^5' },
+                    { k: '2', comb: '\\binom{4}{2} = 6', aFactor: '(xy)^2 = x^2y^2', bFactor: 'y^4', term: '6x^2y^6' },
+                    { k: '3', comb: '\\binom{4}{3} = 4', aFactor: 'xy', bFactor: '-y^6', term: '-4xy^7' },
+                    { k: '4', comb: '\\binom{4}{4} = 1', aFactor: '1', bFactor: 'y^8', term: 'y^8' }
+                ],
+                finalResult: '$$x^4y^4 - 4x^3y^5 + 6x^2y^6 - 4xy^7 + y^8$$',
+                quiz: {
+                    question: '¿Cuál es el exponente total de $y$ en el término central ($k=2$) de $(xy-y^2)^4$?',
+                    options: ['$y^4$', '$y^5$', '$y^6$', '$y^8$'],
+                    correct: 2,
+                    explanation: 'El término es $6(xy)^2(-y^2)^2 = 6(x^2y^2)(y^4) = 6x^2y^6$. El exponente de $y$ es $6$.'
+                }
+            },
+            f: {
+                id: 'f',
+                title: 'Apartado f)',
+                expression: '(x - y)^7',
+                latexExpr: '(x - y)^7',
+                a_val: 'x',
+                b_val: '-y',
+                n_val: '7',
+                pascalRow: [1, 7, 21, 35, 35, 21, 7, 1],
+                notes: 'Potencia de grado $7$. El desarrollo consta de exactamente $8$ términos con signos alternados.',
+                steps: [
+                    {
+                        title: 'Paso 1: Aplicación con la fila 7 del Triángulo de Pascal',
+                        desc: 'Los coeficientes combinatorios para $n = 7$ son $1, 7, 21, 35, 35, 21, 7, 1$:',
+                        latex: '$$(x-y)^7 = \\binom{7}{0}x^7 + \\binom{7}{1}x^6(-y)^1 + \\binom{7}{2}x^5(-y)^2 + \\binom{7}{3}x^4(-y)^3 + \\binom{7}{4}x^3(-y)^4 + \\binom{7}{5}x^2(-y)^5 + \\binom{7}{6}x^1(-y)^6 + \\binom{7}{7}(-y)^7$$'
+                    },
+                    {
+                        title: 'Paso 2: Sustituir números combinatorios',
+                        desc: 'Evaluamos $(-y)^k$ según la paridad de $k$:',
+                        latex: '$$= 1x^7 + 7x^6(-y) + 21x^5(y^2) + 35x^4(-y^3) + 35x^3(y^4) + 21x^2(-y^5) + 7x(y^6) + 1(-y^7)$$'
+                    },
+                    {
+                        title: 'Paso 3: Resultado con signos alternados',
+                        desc: 'Obtenemos el polinomio final:',
+                        latex: '$$= x^7 - 7x^6y + 21x^5y^2 - 35x^4y^3 + 35x^3y^4 - 21x^2y^5 + 7xy^6 - y^7$$'
+                    }
+                ],
+                termsTable: [
+                    { k: '0', comb: '\\binom{7}{0} = 1', aFactor: 'x^7', bFactor: '1', term: 'x^7' },
+                    { k: '1', comb: '\\binom{7}{1} = 7', aFactor: 'x^6', bFactor: '-y', term: '-7x^6y' },
+                    { k: '2', comb: '\\binom{7}{2} = 21', aFactor: 'x^5', bFactor: 'y^2', term: '21x^5y^2' },
+                    { k: '3', comb: '\\binom{7}{3} = 35', aFactor: 'x^4', bFactor: '-y^3', term: '-35x^4y^3' },
+                    { k: '4', comb: '\\binom{7}{4} = 35', aFactor: 'x^3', bFactor: 'y^4', term: '35x^3y^4' },
+                    { k: '5', comb: '\\binom{7}{5} = 21', aFactor: 'x^2', bFactor: '-y^5', term: '-21x^2y^5' },
+                    { k: '6', comb: '\\binom{7}{6} = 7', aFactor: 'x', bFactor: 'y^6', term: '7xy^6' },
+                    { k: '7', comb: '\\binom{7}{7} = 1', aFactor: '1', bFactor: '-y^7', term: '-y^7' }
+                ],
+                finalResult: '$$x^7 - 7x^6y + 21x^5y^2 - 35x^4y^3 + 35x^3y^4 - 21x^2y^5 + 7xy^6 - y^7$$',
+                quiz: {
+                    question: '¿Cuántos términos tiene en total el desarrollo de $(x-y)^7$?',
+                    options: ['$6$', '$7$', '$8$', '$14$'],
+                    correct: 2,
+                    explanation: 'Todo desarrollo del binomio $(a+b)^n$ consta de $n+1$ términos. Para $n=7$, hay $7+1 = 8$ términos.'
+                }
+            }
+        };
+
+        // Estado global de navegación
+        let currentProblemId = 'a';
+        let currentStepIndex = 0;
+        let userQuizAnswers = {};
+
+        // Helper para cálculo combinatorio nCr
+        function nCr(n, r) {
+            if (r < 0 || r > n) return 0;
+            if (r === 0 || r === n) return 1;
+            if (r === 1 || r === n - 1) return n;
+            let res = 1;
+            for (let i = 1; i <= r; i++) {
+                res = res * (n - i + 1) / i;
+            }
+            return Math.round(res);
+        }
+
+        // Función Maestra de Renderizado KaTeX
+        function renderAllMath(container = document.body) {
+            if (typeof renderMathInElement === 'function') {
+                try {
+                    renderMathInElement(container, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false
+                    });
+                } catch (err) {
+                    console.error("Error al renderizar KaTeX:", err);
+                }
+            }
+        }
+
+        // Cambio de pestañas principales
+        function switchTab(tabName) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            const selectedSection = document.getElementById(`sec-${tabName}`);
+            const selectedTab = document.getElementById(`tab-${tabName}`);
+
+            if (selectedSection) selectedSection.classList.remove('hidden');
+            if (selectedTab) selectedTab.classList.add('active');
+
+            if (tabName === 'teoria') {
+                renderPascalTriangle();
+            } else if (tabName === 'ejercicios') {
+                selectProblem(currentProblemId);
+            } else if (tabName === 'quiz') {
+                renderQuizSection();
+            }
+
+            renderAllMath(selectedSection || document.body);
+        }
+
+        // Renderizado del Triángulo de Pascal Interactivo
+        function renderPascalTriangle(highlightRow = 4) {
+            const container = document.getElementById('pascal-container');
+            const numRows = parseInt(document.getElementById('pascal-rows').value) || 7;
+            container.innerHTML = '';
+
+            for (let n = 0; n <= numRows; n++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `flex items-center justify-center gap-1.5 my-1 transition-all p-1 rounded-xl cursor-pointer ${n === highlightRow ? 'bg-indigo-600/40 ring-2 ring-indigo-400' : 'hover:bg-slate-800'}`;
+                rowDiv.onclick = () => selectPascalRow(n);
+
+                // Etiqueta de fila n
+                const label = document.createElement('span');
+                label.className = 'text-[10px] font-mono font-bold text-slate-400 w-8 text-right mr-2 select-none';
+                label.textContent = `n=${n}`;
+                rowDiv.appendChild(label);
+
+                // Nodos numéricos
+                const rowNodes = document.createElement('div');
+                rowNodes.className = 'flex items-center gap-1 sm:gap-2 flex-wrap justify-center';
+
+                for (let k = 0; k <= n; k++) {
+                    const val = nCr(n, k);
+                    const node = document.createElement('span');
+                    node.className = `pascal-node inline-flex items-center justify-center px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg text-xs font-mono font-bold border shadow-sm ${n === highlightRow ? 'bg-amber-400 text-slate-950 border-amber-300' : 'bg-slate-800 text-slate-200 border-slate-700'}`;
+                    node.textContent = val;
+                    rowNodes.appendChild(node);
+                }
+
+                rowDiv.appendChild(rowNodes);
+                container.appendChild(rowDiv);
+            }
+
+            selectPascalRow(highlightRow);
+        }
+
+        function selectPascalRow(n) {
+            const coefs = [];
+            for (let k = 0; k <= n; k++) coefs.push(nCr(n, k));
+            
+            document.getElementById('pascal-selected-row').innerHTML = `$n = ${n}$`;
+            document.getElementById('pascal-selected-coefs').textContent = `Coeficientes: [${coefs.join(', ')}]`;
+            document.getElementById('pascal-selected-sum').innerHTML = `$2^{${n}} = ${Math.pow(2, n)}$`;
+
+            // Actualizar resaltado en UI
+            const container = document.getElementById('pascal-container');
+            Array.from(container.children).forEach((child, index) => {
+                if (index === n) {
+                    child.className = 'flex items-center justify-center gap-1.5 my-1 transition-all p-1 rounded-xl cursor-pointer bg-indigo-600/40 ring-2 ring-indigo-400';
+                } else {
+                    child.className = 'flex items-center justify-center gap-1.5 my-1 transition-all p-1 rounded-xl cursor-pointer hover:bg-slate-800';
+                }
+            });
+
+            renderAllMath(document.getElementById('pascal-info-box'));
+        }
+
+        // Selección de Ejercicio (a-f)
+        function selectProblem(probId) {
+            currentProblemId = probId;
+            currentStepIndex = 0;
+
+            const prob = problemsData[probId];
+            if (!prob) return;
+
+            // Actualizar botones de selección
+            document.querySelectorAll('.exercise-pill').forEach(pill => {
+                pill.classList.remove('active');
+                pill.classList.add('bg-white', 'text-slate-700');
+            });
+            const activeBtn = document.getElementById(`btn-prob-${probId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.classList.remove('bg-white', 'text-slate-700');
+            }
+
+            // Datos del encabezado
+            document.getElementById('bg-big-letter').textContent = probId.toUpperCase();
+            document.getElementById('ex-title').textContent = prob.title;
+            document.getElementById('ex-pascal-row-num').innerHTML = `$n = ${prob.n_val}$`;
+            document.getElementById('ex-notes').innerHTML = prob.notes;
+
+            // Expresión y variables
+            document.getElementById('ex-expression-display').innerHTML = `$$${prob.latexExpr}$$`;
+            document.getElementById('ex-val-a').innerHTML = `$${prob.a_val}$`;
+            document.getElementById('ex-val-b').innerHTML = `$${prob.b_val}$`;
+            document.getElementById('ex-val-n').innerHTML = `$${prob.n_val}$`;
+
+            // Renderizar Paso Actual
+            renderCurrentStep();
+
+            // Renderizar Tabla
+            renderTermsTable(prob.termsTable);
+
+            // Renderizar Resultado Final
+            document.getElementById('ex-final-result').innerHTML = prob.finalResult;
+
+            // Trigger global KaTeX render
+            renderAllMath(document.getElementById('exercise-card'));
+        }
+
+        function renderCurrentStep() {
+            const prob = problemsData[currentProblemId];
+            const stepBox = document.getElementById('step-content-box');
+            const totalSteps = prob.steps.length;
+
+            document.getElementById('step-indicator').textContent = `Paso ${currentStepIndex + 1} de ${totalSteps}`;
+            document.getElementById('btn-prev-step').disabled = (currentStepIndex === 0);
+            document.getElementById('btn-next-step').disabled = (currentStepIndex === totalSteps - 1);
+
+            const step = prob.steps[currentStepIndex];
+
+            stepBox.innerHTML = `
+                <div class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-6 transition-all">
+                    <h3 class="text-base font-bold text-indigo-950 mb-2 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center">${currentStepIndex + 1}</span>
+                        ${step.title}
+                    </h3>
+                    <p class="text-xs text-slate-600 mb-4 whitespace-pre-line leading-relaxed">${step.desc}</p>
+                    <div class="math-scroll bg-white p-4 rounded-xl border border-indigo-100 shadow-inner text-indigo-950 font-semibold text-center text-sm sm:text-base">
+                        ${step.latex}
+                    </div>
+                </div>
+            `;
+
+            renderAllMath(stepBox);
+        }
+
+        function prevStep() {
+            if (currentStepIndex > 0) {
+                currentStepIndex--;
+                renderCurrentStep();
+            }
+        }
+
+        function nextStep() {
+            const prob = problemsData[currentProblemId];
+            if (currentStepIndex < prob.steps.length - 1) {
+                currentStepIndex++;
+                renderCurrentStep();
+            }
+        }
+
+        function showAllSteps() {
+            const prob = problemsData[currentProblemId];
+            const stepBox = document.getElementById('step-content-box');
+            stepBox.innerHTML = '';
+
+            prob.steps.forEach((step, idx) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-2 mb-4';
+                
+                stepDiv.innerHTML = `
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-slate-800 text-white text-xs flex items-center justify-center">${idx + 1}</span> 
+                        ${step.title}
+                    </h3>
+                    <p class="text-xs text-slate-600 whitespace-pre-line leading-relaxed">${step.desc}</p>
+                    <div class="math-scroll bg-white p-3 rounded-xl border border-slate-200 text-center font-medium text-slate-900 text-xs sm:text-sm mt-2">
+                        ${step.latex}
+                    </div>
+                `;
+
+                stepBox.appendChild(stepDiv);
+            });
+
+            document.getElementById('step-indicator').textContent = `Mostrando todos los pasos (${prob.steps.length})`;
+            document.getElementById('btn-prev-step').disabled = true;
+            document.getElementById('btn-next-step').disabled = true;
+
+            renderAllMath(stepBox);
+        }
+
+        function renderTermsTable(tableData) {
+            const tbody = document.getElementById('ex-table-body');
+            tbody.innerHTML = '';
+
+            tableData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-slate-500">$${row.k}$</td>
+                    <td class="p-3">$${row.comb}$</td>
+                    <td class="p-3">$${row.aFactor}$</td>
+                    <td class="p-3">$${row.bFactor}$</td>
+                    <td class="p-3 bg-indigo-50/50 font-bold text-indigo-900">$${row.term}$</td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            renderAllMath(tbody);
+        }
+
+        // Lógica de la Calculadora Interactiva
+        function loadCalcPreset(a, b, n) {
+            document.getElementById('calc-a').value = a;
+            document.getElementById('calc-b').value = b;
+            document.getElementById('calc-n').value = n;
+            document.getElementById('calc-n-slider').value = n;
+            runCalculator();
+        }
+
+        function runCalculator() {
+            const aStr = document.getElementById('calc-a').value.trim() || 'a';
+            const bStr = document.getElementById('calc-b').value.trim() || 'b';
+            const n = parseInt(document.getElementById('calc-n').value) || 4;
+
+            const resultBox = document.getElementById('calc-result-box');
+            resultBox.classList.remove('hidden');
+
+            // Renderizar preview de entrada
+            const fullExprLatex = `$$(${aStr} + (${bStr}))^{${n}}$$`;
+            document.getElementById('calc-preview-expr').innerHTML = fullExprLatex;
+
+            // Obtener coeficientes de Pascal
+            const pascalRow = [];
+            for (let k = 0; k <= n; k++) pascalRow.push(nCr(n, k));
+            
+            document.getElementById('calc-res-n').innerHTML = `$${n}$`;
+            document.getElementById('calc-res-pascal').textContent = pascalRow.join(', ');
+
+            // Generar Paso 1
+            const step1Terms = [];
+            for (let k = 0; k <= n; k++) {
+                const aPow = n - k;
+                const bPow = k;
+                let aPart = aPow === 0 ? '' : (aPow === 1 ? `(${aStr})` : `(${aStr})^{${aPow}}`);
+                let bPart = bPow === 0 ? '' : (bPow === 1 ? `(${bStr})` : `(${bStr})^{${bPow}}`);
+                step1Terms.push(`\\binom{${n}}{${k}}${aPart}${bPart}`);
+            }
+            const step1Latex = `$$(${aStr} + (${bStr}))^{${n}} = ` + step1Terms.join(' + ') + '$$';
+            document.getElementById('calc-step-1').innerHTML = step1Latex;
+
+            // Generar Tabla
+            const tbody = document.getElementById('calc-table-body');
+            tbody.innerHTML = '';
+
+            for (let k = 0; k <= n; k++) {
+                const combVal = nCr(n, k);
+                const aPow = n - k;
+                const bPow = k;
+
+                let aFactor = aPow === 0 ? '1' : (aPow === 1 ? aStr : `(${aStr})^{${aPow}}`);
+                let bFactor = bPow === 0 ? '1' : (bPow === 1 ? bStr : `(${bStr})^{${bPow}}`);
+                let resultingTerm = `${combVal} \\cdot (${aFactor}) \\cdot (${bFactor})`;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-slate-500">$${k}$</td>
+                    <td class="p-3">$\\binom{${n}}{${k}} = ${combVal}$</td>
+                    <td class="p-3">$${aFactor}$</td>
+                    <td class="p-3">$${bFactor}$</td>
+                    <td class="p-3 bg-purple-50/50 font-bold text-purple-900">$${resultingTerm}$</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            renderAllMath(resultBox);
+        }
+
+        // Lógica de la Sección Quiz
+        function renderQuizSection() {
+            const container = document.getElementById('quiz-questions-container');
+            container.innerHTML = '';
+
+            let score = 0;
+            const keys = Object.keys(problemsData);
+
+            keys.forEach((key, index) => {
+                const prob = problemsData[key];
+                const quiz = prob.quiz;
+                const userAnswer = userQuizAnswers[key];
+
+                const qCard = document.createElement('div');
+                qCard.className = 'bg-slate-50 border border-slate-200 rounded-2xl p-6 transition-all';
+
+                let statusBadge = '';
+                if (userAnswer !== undefined) {
+                    if (userAnswer === quiz.correct) {
+                        score++;
+                        statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200"><i class="fa-solid fa-check"></i> ¡Correcto!</span>`;
+                    } else {
+                        statusBadge = `<span class="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full border border-rose-200"><i class="fa-solid fa-xmark"></i> Incorrecto</span>`;
+                    }
+                }
+
+                qCard.innerHTML = `
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">Pregunta ${index + 1} (${prob.title})</span>
+                        <div>${statusBadge}</div>
+                    </div>
+                    <div class="text-sm font-bold text-slate-900 mb-4">${quiz.question}</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 q-options-container"></div>
+                    <div class="q-explanation ${userAnswer !== undefined ? '' : 'hidden'} mt-4 p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-600">
+                        <strong>Explicación:</strong> ${quiz.explanation}
+                    </div>
+                `;
+
+                container.appendChild(qCard);
+
+                // Opciones
+                const optsContainer = qCard.querySelector('.q-options-container');
+                quiz.options.forEach((opt, optIdx) => {
+                    const btn = document.createElement('button');
+                    btn.className = `p-3 rounded-xl border text-xs font-bold transition text-left flex items-center justify-between ${userAnswer === optIdx ? (optIdx === quiz.correct ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-rose-600 text-white border-rose-600') : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-400'}`;
+                    btn.onclick = () => answerQuiz(key, optIdx);
+                    btn.innerHTML = opt;
+                    optsContainer.appendChild(btn);
+                });
+            });
+
+            document.getElementById('quiz-score').textContent = score;
+            renderAllMath(container);
+        }
+
+        function answerQuiz(probKey, selectedIndex) {
+            userQuizAnswers[probKey] = selectedIndex;
+            renderQuizSection();
+        }
+
+        function resetQuiz() {
+            userQuizAnswers = {};
+            renderQuizSection();
+        }
+
+        // Inicialización al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPascalTriangle(4);
+            selectProblem('a');
+            renderAllMath(document.body);
+        });
+    </script>
+</body>
+</html>
